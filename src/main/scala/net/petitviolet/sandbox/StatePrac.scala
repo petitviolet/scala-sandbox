@@ -1,5 +1,7 @@
+package net.petitviolet.sandbox
+
+import scalaz.Scalaz._
 import scalaz._
-import Scalaz._
 
 object StatePrac extends App {
 

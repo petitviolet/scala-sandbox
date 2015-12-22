@@ -1,3 +1,5 @@
+package net.petitviolet.sandbox
+
 import scala.util.Random
 
 object TypingWithoutIf extends App {

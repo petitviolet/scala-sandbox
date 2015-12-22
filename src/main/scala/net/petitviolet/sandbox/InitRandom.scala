@@ -1,3 +1,5 @@
+package net.petitviolet.sandbox
+
 
 object InitRandom extends App {
 

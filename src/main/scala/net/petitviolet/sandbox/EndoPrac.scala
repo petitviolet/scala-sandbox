@@ -1,4 +1,7 @@
-import scalaz._, Scalaz._
+package net.petitviolet.sandbox
+
+import scalaz.Scalaz._
+import scalaz._
 
 object EndoPrac extends App {
   val add: Int => Int => Int = i => n => {

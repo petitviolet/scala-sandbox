@@ -1,5 +1,7 @@
-import scalaz._
-import Scalaz._
+package net.petitviolet.sandbox
+
+import scalaz.Scalaz._
+//import Scalaz._
 
 object FuncPrac extends App {
   case class Box(id: Long, name: String)
@@ -13,5 +15,5 @@ object FuncPrac extends App {
     y <- g
   } yield h(x)(y)
 
-
+  println(i(10))
 }
