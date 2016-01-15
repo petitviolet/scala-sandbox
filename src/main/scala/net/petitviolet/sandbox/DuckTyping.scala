@@ -1,7 +1,5 @@
 package net.petitviolet.sandbox
 
-import org.openjdk.jmh.annotations.Benchmark
-
 import scala.language.reflectiveCalls
 
 class DuckTyping {
@@ -46,17 +44,17 @@ class DuckTyping {
   val great = Great(2)
   val seq = Seq(1, 2, 3)
 
-  @Benchmark
+//  @Benchmark
   def benchReflection(): Unit = {
     (0 to NUM) foreach (_ => callSizeReflection(nice))
   }
 
-  @Benchmark
+//  @Benchmark
   def benchPattern(): Unit = {
     (0 to NUM) foreach (_ => callSizePattern(nice))
 }
 
-  @Benchmark
+//  @Benchmark
   def benchDuck(): Unit = {
     (0 to NUM) foreach (_ => callSizeDuck(nice))
 }
