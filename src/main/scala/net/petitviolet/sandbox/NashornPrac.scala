@@ -18,19 +18,62 @@ object NashornPrac extends App {
     var f = function(a, b) {
       return jStat.beta.sample(a, b);
     };
+
+    var console = {
+        log: function(s) {
+            java.lang.System.out.println(s);
+        }
+    };
+
+    var ucb = function(creative_imp,creative_vimp,creative_click,creative_ctr,
+                 ad_group_imp, ad_group_vimp, ad_group_click, ad_group_ctr) {
+        return 100.0 * (creative_ctr + Math.sqrt(2 * Math.log(ad_group_imp)) / creative_imp);
+    };
+
+    var sum_imp1 = 1000 + 100 + 10000,
+        sum_imp2 = 10000 + 1000 + 10000;
+
+    console.log(ucb(1000, 0, 1, 0.10 * 0.01, sum_imp1, 0, 0, 0));
+    console.log(ucb(100, 0, 0, 0.00 * 0.01, sum_imp1, 0, 0, 0));
+    console.log(ucb(10000, 0, 20, 0.20 * 0.01, sum_imp1, 0, 0, 0));
+
+    console.log('');
+
+    console.log(ucb(10000, 0, 10, 0.10 * 0.01, sum_imp2, 0, 0, 0));
+    console.log(ucb(1000, 0, 1, 0.10 * 0.01, sum_imp2, 0, 0, 0));
+    console.log(ucb(10000, 0, 20, 0.20 * 0.01, sum_imp2, 0, 0, 0));
     """)
   NashornService.compile(function)
 
-  val α = 1
-  val results = (1 to 100) map { β =>
-    val arguments = Seq(α, β)
-    ((α, β), NashornService.invokeAs[Double](function, arguments))
-  }
-  println(results.maxBy { case ((a, b), score) => score })
+  NashornService.invokeAs[Double](function, Seq(1, 2))
+
+  case class Creative(imp: Int, ctr: Double)
+  case class AdGroup(imp: Int)
+
+  val UCB = F("xxx",
+    """
+    var xxx = function(creative, ad_group, f) {
+        console.log("creative: " + creative);
+        console.log("ad_group: " + ad_group);
+        console.log("ad_group: " + f(ad_group));
+        return 100.0 * (creative.ctr() + Math.sqrt(2 * Math.log(ad_group.imp())) / creative.imp());
+    };
+    """
+  )
+  val x: AdGroup => Int = adGroup => adGroup.imp * 100000
+  NashornService.compile(UCB)
+  NashornService.invokeAs[Double](UCB, Seq(Creative(10000, 0.20 * 0.01), AdGroup(21000), x))
+//  val α = 1
+//  val results = (1 to 100) map { β =>
+//    val arguments = Seq(α, β)
+//    ((α, β), NashornService.invokeAs[Double](function, arguments))
+//  }
+//  println(results.maxBy { case ((a, b), score) => score })
 
 }
 
 case class F(name: String, function: String)
+
 
 private object NashornService {
   private val ENGINE_NAME = "nashorn"
