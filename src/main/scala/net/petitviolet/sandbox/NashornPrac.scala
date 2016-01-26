@@ -15,14 +15,14 @@ object NashornPrac extends App {
 
   val function = F("f",
     """
-    var f = function(a, b) {
-      return jStat.beta.sample(a, b);
-    };
-
     var console = {
         log: function(s) {
             java.lang.System.out.println(s);
         }
+    };
+
+    var f = function(a, b) {
+      return jStat.beta.sample(a, b);
     };
 
     var ucb = function(creative_imp,creative_vimp,creative_click,creative_ctr,
@@ -52,23 +52,55 @@ object NashornPrac extends App {
 
   val UCB = F("xxx",
     """
-    var xxx = function(creative, ad_group, f) {
+    var xxx = function(creative, ad_group) {
+        console.log("type - creative " + typeof creative);
+        console.log("type - ad_group " + typeof ad_group);
         console.log("creative: " + creative);
         console.log("ad_group: " + ad_group);
-        console.log("ad_group: " + f(ad_group));
+        console.log("creative.ctr: " + creative.ctr);
+        console.log("creative.ctr(): " + creative.ctr());
         return 100.0 * (creative.ctr() + Math.sqrt(2 * Math.log(ad_group.imp())) / creative.imp());
     };
     """
   )
-  val x: AdGroup => Int = adGroup => adGroup.imp * 100000
   NashornService.compile(UCB)
-  NashornService.invokeAs[Double](UCB, Seq(Creative(10000, 0.20 * 0.01), AdGroup(21000), x))
-//  val α = 1
-//  val results = (1 to 100) map { β =>
-//    val arguments = Seq(α, β)
-//    ((α, β), NashornService.invokeAs[Double](function, arguments))
-//  }
-//  println(results.maxBy { case ((a, b), score) => score })
+  NashornService.invokeAs[Double](UCB, Seq(Creative(10000, 0.20 * 0.01), AdGroup(21000)))
+
+  NashornService.compile(
+    """
+  var lf = function(list) {
+      console.log("type - list " + typeof list);
+      console.log("list: " + list);
+      return list.length();
+  };
+
+  var mf = function(map) {
+      console.log("type - map " + typeof map);
+      console.log("map: " + map);
+      return map.size();
+  };
+    """
+  )
+  NashornService.invokeAs[Int]("lf", Seq(List(1, 2, 3)))
+  NashornService.invokeAs[Int]("mf", Seq(Map("a" -> 100, "b" -> 200, "c" -> 300)))
+
+  NashornService.compile(
+    """
+  var ff = function(func) {
+      console.log("type - func " + typeof func);
+      console.log("func: " + func);
+      return func.apply(10);
+  };
+    """
+  )
+  val func: Int => Int = _ * 100
+  NashornService.invokeAs[Int]("ff", Seq(func))
+  //  val α = 1
+  //  val results = (1 to 100) map { β =>
+  //    val arguments = Seq(α, β)
+  //    ((α, β), NashornService.invokeAs[Double](function, arguments))
+  //  }
+  //  println(results.maxBy { case ((a, b), score) => score })
 
 }
 
@@ -92,6 +124,11 @@ private object NashornService {
 
   def compile(function: String): Unit = engine.asInstanceOf[Compilable].compile(function).eval
 
+  /**
+    * 外部ファイルを読み込んでコンパイルする
+    *
+    * @param file
+    */
   def compile(file: FileReader): Unit = {
     engine.asInstanceOf[Compilable].compile(file).eval
   }
