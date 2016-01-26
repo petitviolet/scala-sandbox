@@ -1,6 +1,7 @@
-package net.petitviolet.sandbox
+package net.petitviolet.sandbox.z
 
-import scalaz._, Scalaz._
+import scalaz.Scalaz._
+import scalaz._
 
 object EitherZPrac extends App {
   {

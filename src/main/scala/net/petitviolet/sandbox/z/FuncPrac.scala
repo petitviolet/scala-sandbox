@@ -1,4 +1,4 @@
-package net.petitviolet.sandbox
+package net.petitviolet.sandbox.z
 
 import scalaz.Scalaz._
 //import Scalaz._
