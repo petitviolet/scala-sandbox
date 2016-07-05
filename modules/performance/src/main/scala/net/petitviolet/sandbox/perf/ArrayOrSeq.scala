@@ -3,6 +3,15 @@ package net.petitviolet.sandbox.perf
 import org.openjdk.jmh.annotations._
 import scala.annotation.tailrec
 
+/**
+  * [info] Benchmark            Mode  Cnt  Score   Error  Units
+  * [info] ArrayOrSeq.listSep  thrpt   10  5.201 ± 1.135  ops/s
+  * [info] ArrayOrSeq.seqSep   thrpt   10  5.625 ± 0.662  ops/s
+  * [info] ArrayOrSeq.signSep  thrpt   10  6.354 ± 0.328  ops/s
+  * [info] ArrayOrSeq.vecSep   thrpt   10  6.552 ± 0.267  ops/s
+  * [success] Total time: 162 s, completed 2016/07/05 19:18:36
+  * sbt 'project performance' 'jmh:run -i 10 -wi 10 -f1 -t4'  543.38s user 10.36s system 332% cpu 2:46.54 total
+  */
 @State(Scope.Benchmark)
 class ArrayOrSeq {
   val NUM = 10000
