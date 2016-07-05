@@ -107,12 +107,21 @@ object NashornPrac extends App {
 case class F(name: String, function: String)
 
 
-private object NashornService {
+private object NashornService extends App {
   private val ENGINE_NAME = "nashorn"
   private type ENGINE_TYPE = ScriptEngine with Invocable
-  private val engine = createEngine()
+//  private val engine = createEngine()
 
   private def createEngine() = new ScriptEngineManager().getEngineByName(ENGINE_NAME).asInstanceOf[ENGINE_TYPE]
+
+  val engine = new ScriptEngineManager().getEngineByName(ENGINE_NAME).asInstanceOf[ENGINE_TYPE]
+  val functionName = "random"
+  val function = s"var $functionName = function(a, b) { return Math.random(); };"
+  engine.asInstanceOf[Compilable].compile(function).eval
+  val arguments = Seq(1, 2).map(_.asInstanceOf[AnyRef])
+  val result = engine.invokeFunction(functionName, arguments: _*)
+  println(s"result: $result, ${result.getClass.getName}")
+
 
   /**
     * jsの関数をコンパイルして保存する

@@ -8,7 +8,7 @@ object InitRandom extends App {
 
   def now = System.currentTimeMillis
 
-  val NUM = 1000000
+  val NUM = 10000
   val RANGE = (1 until NUM).toStream
 
   var start = now
