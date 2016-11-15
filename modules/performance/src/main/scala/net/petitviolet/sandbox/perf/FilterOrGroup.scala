@@ -16,6 +16,7 @@ class FilterOrGroup {
   val targets: Seq[Target] = (0 to NUM).map { id => Target(id, s"target-$id", parentId) }
 
   @Benchmark
+  @BenchmarkMode(Array(Mode.Throughput))
   def filtering() = {
     val result: IndexedSeq[Seq[Target]] = (0 to 3) map { n =>
       val targetParentId = parentId
@@ -25,6 +26,7 @@ class FilterOrGroup {
   }
 
   @Benchmark
+  @BenchmarkMode(Array(Mode.Throughput))
   def groupBying() = {
     val grouped = targets.groupBy(_.parentId)
     val result: IndexedSeq[Map[Int, Seq[Target]]] = (0 to 3) map { n =>

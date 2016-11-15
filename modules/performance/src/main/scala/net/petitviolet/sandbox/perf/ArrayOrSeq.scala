@@ -19,6 +19,7 @@ class ArrayOrSeq {
   val seqTarget = (0 to NUM).toSeq
 
   @Benchmark
+  @BenchmarkMode(Array(Mode.Throughput))
   def seqSep() = {
     @tailrec
     def makeMsg(res: String)(seq: Seq[Int]): String = {
@@ -31,6 +32,7 @@ class ArrayOrSeq {
   }
 
   @Benchmark
+  @BenchmarkMode(Array(Mode.Throughput))
   def signSep() = {
     @tailrec
     def makeMsg(res: String)(seq: Seq[Int]): String = {
@@ -43,6 +45,7 @@ class ArrayOrSeq {
   }
 
   @Benchmark
+  @BenchmarkMode(Array(Mode.Throughput))
   def listSep() = {
     @tailrec
     def makeMsg(res: String)(seq: List[Int]): String = {
@@ -55,6 +58,7 @@ class ArrayOrSeq {
   }
 
   @Benchmark
+  @BenchmarkMode(Array(Mode.Throughput))
   def vecSep() = {
     @tailrec
     def makeMsg(res: String)(seq: Vector[Int]): String = {
