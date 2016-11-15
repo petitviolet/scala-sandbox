@@ -8,7 +8,7 @@ import scala.language.implicitConversions
 object NashornPrac extends App {
   implicit def toAnyRef[A](seq: Seq[A]): Seq[AnyRef] = seq.map(_.asInstanceOf[AnyRef])
 
-  val loadJStat = new FileReader("src/main/resources/jstat.min.js")
+  val loadJStat = new FileReader("modules/sandbox/src/main/resources/jstat.min.js")
   //  val loadJStat = """load("https://raw.githubusercontent.com/jstat/jstat/master/dist/jstat.min.js");"""
 
   NashornService.compile(loadJStat)
@@ -102,19 +102,37 @@ object NashornPrac extends App {
   //  }
   //  println(results.maxBy { case ((a, b), score) => score })
 
+  case class AuctionAdGroupArg(imp: Long, vimp: Long, click: Long, cost: Double)
+  case class AuctionAdGroupChannelArg(imp: Long, vimp: Long, click: Long, cost: Double)
+  case class AuctionCreativeArg(imp: Long, vimp: Long, click: Long, cost: Double)
+
+  val predictionCtr =
+    """
+      |var pre_ctr = function(auction_ad_group, auction_ad_group_channel, auction_creative) {
+      |  console.log("auction_ad_group => " + auction_ad_group);
+      |  console.log("auction_ad_group_channel => " + auction_ad_group_channel);
+      |  console.log("auction_creative => " + auction_creative);
+      |  return 1.0 * auction_ad_group.imp();
+      |};
+    """.stripMargin
+  NashornService.compile(predictionCtr)
+  val predictionCtrResult = NashornService.invokeAs[Double]("pre_ctr",
+    toAnyRef(Seq(AuctionAdGroupArg(1, 2, 3, 1.0), AuctionAdGroupChannelArg(10, 20, 30, 10.0), AuctionCreativeArg(100, 200, 300, 100.0))))
+  println(s"result => $predictionCtrResult")
+
 }
 
 case class F(name: String, function: String)
 
 
-private object NashornService extends App {
+private object NashornService {
   private val ENGINE_NAME = "nashorn"
   private type ENGINE_TYPE = ScriptEngine with Invocable
 //  private val engine = createEngine()
 
   private def createEngine() = new ScriptEngineManager().getEngineByName(ENGINE_NAME).asInstanceOf[ENGINE_TYPE]
 
-  val engine = new ScriptEngineManager().getEngineByName(ENGINE_NAME).asInstanceOf[ENGINE_TYPE]
+  val engine = createEngine()
   val functionName = "random"
   val function = s"var $functionName = function(a, b) { return Math.random(); };"
   engine.asInstanceOf[Compilable].compile(function).eval
