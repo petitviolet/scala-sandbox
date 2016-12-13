@@ -179,3 +179,18 @@ private object NashornService {
     result.asInstanceOf[A]
   }
 }
+
+object NashornExample extends App {
+  val ENGINE_NAME = "nashorn"
+  val engine = new ScriptEngineManager()
+    .getEngineByName(ENGINE_NAME)
+    .asInstanceOf[ScriptEngine with Invocable]
+
+  val fName = "func"
+  val f = s"""function $fName(a, b) { return a + b; };"""
+  engine.asInstanceOf[Compilable].compile(f).eval()
+
+  val argments = Seq(1, 2) map { _.asInstanceOf[AnyRef] }
+  val result = engine.invokeFunction(fName, argments: _*)
+  println(s"result => $result")
+}
