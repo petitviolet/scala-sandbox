@@ -5,6 +5,13 @@ import org.openjdk.jmh.annotations._
 import scala.collection.parallel.ForkJoinTaskSupport
 import scala.concurrent.forkjoin.ForkJoinPool
 
+/**
+ * [info] Benchmark                 Mode  Cnt      Score      Error  Units
+ * [info] ParTest.benchBulkGet     thrpt   20  51081.579 ± 2203.313  ops/s
+ * [info] ParTest.benchBulkGetPar  thrpt   20  15618.309 ± 1998.560  ops/s
+ * [success] Total time: 93 s, completed 2016/12/14 22:31:52
+ * sbt 'project performance' 'jmh:run -i 20 -wi 20 -f1 -t 8 .*ParTest.*'
+ */
 @State(Scope.Benchmark)
 class ParTest {
   var mapValues: Map[Long, String] = _
@@ -33,7 +40,8 @@ class ParTest {
   def benchBulkGet = {
     bulkGet(ids)
   }
-  def bulkGet(ids: Set[Long]): Set[String] = ids.flatMap { this.get }
+
+  def bulkGet(ids: Set[Long]): Set[String] = ids.flatMap {this.get}
 
   @Benchmark
   @BenchmarkMode(Array(Mode.Throughput))
@@ -44,7 +52,7 @@ class ParTest {
   def bulkGetPar(ids: Set[Long]): Set[String] = {
     val p = ids.par
     p.tasksupport = taskSupport
-    p.flatMap { this.get }.seq
+    p.flatMap {this.get}.seq
   }
 
 //  @Benchmark

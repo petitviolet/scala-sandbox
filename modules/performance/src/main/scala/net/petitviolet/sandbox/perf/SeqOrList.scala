@@ -2,17 +2,12 @@ package net.petitviolet.sandbox.perf
 
 import org.openjdk.jmh.annotations._
 
-import scala.annotation.tailrec
-import scala.util.Random
-
 /**
- * List()とSeq()はあんまり変わらない
- * [info]
- * [info] Benchmark        Mode  Cnt    Score    Error  Units
- * [info] SeqOrList.list  thrpt  100  922.159 ± 64.571  ops/s
- * [info] SeqOrList.seq   thrpt  100  938.314 ± 47.048  ops/s
- * [success] Total time: 418 s, completed 2016/12/13 8:29:30
- * sbt 'project performance' 'jmh:run -i 10 -wi 10 .*SeqOrList.*'  395.33s user 15.65s system 95% cpu 7:08.27 total
+ * Seq.applyの方がはやい！
+ * [info] Benchmark        Mode  Cnt         Score        Error  Units
+ * [info] SeqOrList.list  thrpt  200  11485516.282 ± 346706.969  ops/s
+ * [info] SeqOrList.seq   thrpt  200  12462881.306 ± 545318.664  ops/s
+ * sbt 'project performance' 'jmh:run -i 20 -wi 20 .*SeqOrList.*'
  */
 @State(Scope.Benchmark)
 class SeqOrList {
@@ -21,13 +16,13 @@ class SeqOrList {
 
   @Benchmark
   @BenchmarkMode(Array(Mode.Throughput))
-  def seq(): Seq[Seq[Int]] = {
-    targets map { i => Seq(i) }
+  def seq(): Seq[Int] = {
+    Seq.apply(1)
   }
 
   @Benchmark
   @BenchmarkMode(Array(Mode.Throughput))
-  def list(): Seq[List[Int]] = {
-    targets map { i => List(i) }
+  def list(): List[Int] = {
+    List.apply(1)
   }
 }
