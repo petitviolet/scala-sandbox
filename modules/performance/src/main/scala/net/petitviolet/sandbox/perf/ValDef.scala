@@ -13,36 +13,40 @@ import org.openjdk.jmh.annotations._
  */
 @State(Scope.Benchmark)
 class ValDef {
+  @Param(Array("10", "100", "1000"))
+  var N: Int = _
 
   @Benchmark
   @BenchmarkMode(Array(Mode.Throughput))
-  def _val() = {
-    val n = 10
+  def valLight() = {
     val run: Int => Int = _ * 2
-    run(n)
+    run(N)
   }
 
   @Benchmark
   @BenchmarkMode(Array(Mode.Throughput))
-  def _def() = {
-    val n = 10
+  def defLight() = {
     def run(i: Int): Int = i * 2
-    run(n)
+    run(N)
   }
 
   @Benchmark
   @BenchmarkMode(Array(Mode.Throughput))
-  def _val2() = {
-    val n = 10
-    val run: Int => Int = _ * n
-    run(n)
+  def valHeavy() = {
+    val run: Int => Int = i => {
+      (0 to i).map {_ % 5}.distinct.sum
+    }
+
+    run(N)
   }
 
   @Benchmark
   @BenchmarkMode(Array(Mode.Throughput))
-  def _def2() = {
-    val n = 10
-    def run(i: Int): Int = i * n
-    run(n)
+  def defHeavy() = {
+    def run(i: Int): Int = {
+      (0 to i).map {_ % 5}.distinct.sum
+    }
+
+    run(N)
   }
 }
