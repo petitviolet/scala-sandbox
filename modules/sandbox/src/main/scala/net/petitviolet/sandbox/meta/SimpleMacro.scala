@@ -1,9 +1,39 @@
 package net.petitviolet.sandbox.meta
 
-import scala.collection.immutable.Stack
+import scala.collection.immutable.{Seq, Stack}
 import scala.meta._
 import scala.meta.tokens.Token._
 import scala.util.{Failure, Success, Try}
+
+object MetaExapmle extends App {
+  val classSource: Parsed[Source] = """case class Bar(value: String)""".parse[Source]
+  val nameStat: Parsed[Stat] = """val name = "hoge"""".parse[Stat]
+  val valName: Defn.Val = q"""val name = "hoge""""
+  val defName: Defn.Def = q"""def name = "hoge""""
+  val fooClass: Defn.Class = q"case class Foo(value: Int) extends AnyVal"
+
+  val target =
+    """|case class Hoge(value: Int)
+       |object a {
+       |  x match {
+       |    case Hoge(i) => println(i)
+       |    case bar: Throwable => println(bar)
+       |  }
+       |}
+       |""".stripMargin
+
+  val result: Seq[String] = target.parse[Source].get.collect {
+    case c @ Case((p"$name: Throwable", cond, body)) =>
+//      println(s"case => $c, ($name, $cond, $body)")
+      s"NonFatal(${name.syntax}) => $body"
+//    case c @ p"case $name: Throwable => $expr" =>
+//      println(s"case => $c, class => ${c.getClass}, name: $name, expr => $expr")
+//      c
+    case other => other.syntax
+  }
+  println(result.mkString(""))
+
+}
 
 trait Logging {
   def logging(msg: => String, suppress: Boolean = true) = {
@@ -11,7 +41,7 @@ trait Logging {
   }
 }
 
-private object TokenExcersize extends App with Logging {
+private object TokenExercize extends App with Logging {
 
   val tokenizedSeq = Seq(
     """val x = 10""",
