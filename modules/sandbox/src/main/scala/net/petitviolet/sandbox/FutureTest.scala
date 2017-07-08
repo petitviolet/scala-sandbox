@@ -21,7 +21,7 @@ object FutureTest extends App {
       r2 <- future2
     } yield {
       val end = System.currentTimeMillis()
-      println(s"first - result: ${r1 + r2 }, ${end - start1 }")
+      println(s"first - result: ${r1 + r2}, ${end - start1}")
       // first - result: 30, 1124
     }
 
@@ -37,7 +37,7 @@ object FutureTest extends App {
       r2 <- Future { Thread.sleep(1000); 20 }
     } yield {
       val end = System.currentTimeMillis()
-      println(s"second - result: ${r1 + r2 }, ${end - start2 }")
+      println(s"second - result: ${r1 + r2}, ${end - start2}")
       // second - result: 30, 2007
     }
 

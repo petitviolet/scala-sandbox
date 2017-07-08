@@ -1,7 +1,7 @@
 package net.petitviolet.sandbox
 
 import java.io.FileReader
-import javax.script.{Compilable, Invocable, ScriptEngine, ScriptEngineManager}
+import javax.script.{ Compilable, Invocable, ScriptEngine, ScriptEngineManager }
 
 import scala.language.implicitConversions
 
@@ -13,7 +13,8 @@ object NashornPrac extends App {
 
   NashornService.compile(loadJStat)
 
-  val function = F("f",
+  val function = F(
+    "f",
     """
     var console = {
         log: function(s) {
@@ -42,7 +43,8 @@ object NashornPrac extends App {
     console.log(ucb(10000, 0, 10, 0.10 * 0.01, sum_imp2, 0, 0, 0));
     console.log(ucb(1000, 0, 1, 0.10 * 0.01, sum_imp2, 0, 0, 0));
     console.log(ucb(10000, 0, 20, 0.20 * 0.01, sum_imp2, 0, 0, 0));
-    """)
+    """
+  )
   NashornService.compile(function)
 
   NashornService.invokeAs[Double](function, Seq(1, 2))
@@ -50,7 +52,8 @@ object NashornPrac extends App {
   case class Creative(imp: Int, ctr: Double)
   case class AdGroup(imp: Int)
 
-  val UCB = F("xxx",
+  val UCB = F(
+    "xxx",
     """
     var xxx = function(creative, ad_group) {
         console.log("type - creative " + typeof creative);
@@ -116,19 +119,20 @@ object NashornPrac extends App {
       |};
     """.stripMargin
   NashornService.compile(predictionCtr)
-  val predictionCtrResult = NashornService.invokeAs[Double]("pre_ctr",
-    toAnyRef(Seq(AuctionAdGroupArg(1, 2, 3, 1.0), AuctionAdGroupChannelArg(10, 20, 30, 10.0), AuctionCreativeArg(100, 200, 300, 100.0))))
+  val predictionCtrResult = NashornService.invokeAs[Double](
+    "pre_ctr",
+    toAnyRef(Seq(AuctionAdGroupArg(1, 2, 3, 1.0), AuctionAdGroupChannelArg(10, 20, 30, 10.0), AuctionCreativeArg(100, 200, 300, 100.0)))
+  )
   println(s"result => $predictionCtrResult")
 
 }
 
 case class F(name: String, function: String)
 
-
 private object NashornService {
   private val ENGINE_NAME = "nashorn"
   private type ENGINE_TYPE = ScriptEngine with Invocable
-//  private val engine = createEngine()
+  //  private val engine = createEngine()
 
   private def createEngine() = new ScriptEngineManager().getEngineByName(ENGINE_NAME).asInstanceOf[ENGINE_TYPE]
 
@@ -140,35 +144,34 @@ private object NashornService {
   val result = engine.invokeFunction(functionName, arguments: _*)
   println(s"result: $result, ${result.getClass.getName}")
 
-
   /**
-    * jsの関数をコンパイルして保存する
-    * 同名の関数は後勝ちになる
-    *
-    * @param f
-    */
+   * jsの関数をコンパイルして保存する
+   * 同名の関数は後勝ちになる
+   *
+   * @param f
+   */
   def compile(f: F): Unit = compile(f.function)
 
   def compile(function: String): Unit = engine.asInstanceOf[Compilable].compile(function).eval
 
   /**
-    * 外部ファイルを読み込んでコンパイルする
-    *
-    * @param file
-    */
+   * 外部ファイルを読み込んでコンパイルする
+   *
+   * @param file
+   */
   def compile(file: FileReader): Unit = {
     engine.asInstanceOf[Compilable].compile(file).eval
   }
 
   /**
-    * 関数を実行する
-    * 指定した関数名の関数が見付からなかった場合や関数内で例外が発生した場合は、例外が発生する
-    *
-    * @param f
-    * @param args
-    * @tparam A
-    * @return
-    */
+   * 関数を実行する
+   * 指定した関数名の関数が見付からなかった場合や関数内で例外が発生した場合は、例外が発生する
+   *
+   * @param f
+   * @param args
+   * @tparam A
+   * @return
+   */
   def invokeAs[A](f: F, args: Seq[AnyRef]): A = {
     invokeAs[A](f.name, args)
   }

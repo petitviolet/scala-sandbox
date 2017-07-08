@@ -1,18 +1,18 @@
 package net.petitviolet.sandbox.ddd.domain
 
-import net.petitviolet.sandbox.ddd.domain.model.{Identity, Entity}
+import net.petitviolet.sandbox.ddd.domain.model.{ Identity, Entity }
 
 package object lifecycle {
 
   /**
-    * 集約に関する操作
-    *
-    * @tparam ID
-    * @tparam E
-    */
+   * 集約に関する操作
+   *
+   * @tparam ID
+   * @tparam E
+   */
   trait Repository[ID <: Identity[_], E <: Entity[ID]] {
 
-    import scala.collection.mutable.{Map => mMap}
+    import scala.collection.mutable.{ Map => mMap }
 
     val DB: mMap[ID, E]
 
@@ -33,6 +33,5 @@ package object lifecycle {
 
     def exists(id: ID) = DB.get(id).isDefined
   }
-
 
 }

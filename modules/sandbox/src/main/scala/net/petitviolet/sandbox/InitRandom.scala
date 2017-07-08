@@ -1,6 +1,5 @@
 package net.petitviolet.sandbox
 
-
 object InitRandom extends App {
 
   import scala.util.Random

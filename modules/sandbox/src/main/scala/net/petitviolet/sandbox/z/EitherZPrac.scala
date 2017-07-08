@@ -13,7 +13,6 @@ object EitherZPrac extends App {
     println(x)
   }
 
-
   {
     val x = "hogehoge".left[Int] >>= { x => (x + 1).right }
     println(x)
@@ -43,7 +42,6 @@ object EitherZPrac extends App {
     println(x)
   }
 
-
   {
     type MyError[A] = String \/ A
     //  type OptEither[A] = OptionT[{ type λ[I] = \/[String, I] }#λ, A]
@@ -57,7 +55,7 @@ object EitherZPrac extends App {
       i <- a
       j <- b
     } yield i |+| j
-//    val x: scalaz.OptionT[MyError,Int] = a.map[Int](((i: Int) => i))(scalaz.this.\/.DisjunctionInstances1[String]);
+    //    val x: scalaz.OptionT[MyError,Int] = a.map[Int](((i: Int) => i))(scalaz.this.\/.DisjunctionInstances1[String]);
 
     println("--------------")
     println(a)

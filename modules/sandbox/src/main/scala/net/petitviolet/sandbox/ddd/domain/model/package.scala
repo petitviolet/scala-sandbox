@@ -2,9 +2,9 @@ package net.petitviolet.sandbox.ddd.domain
 
 package object model {
   /**
-    * DBのPrimaryKeyに対応する
-    * @tparam A
-    */
+   * DBのPrimaryKeyに対応する
+   * @tparam A
+   */
   trait Identity[A] {
     val value: A
 
@@ -15,9 +15,9 @@ package object model {
   }
 
   /**
-    * DBの1カラムに対応するデータ
-    * @tparam ID
-    */
+   * DBの1カラムに対応するデータ
+   * @tparam ID
+   */
   trait Entity[ID <: Identity[_]] {
     val id: ID
 

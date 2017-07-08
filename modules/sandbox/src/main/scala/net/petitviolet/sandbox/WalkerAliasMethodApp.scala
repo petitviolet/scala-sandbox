@@ -6,7 +6,7 @@ object WalkerAliasMethodApp extends App {
   val pp: Seq[Double] = Seq(0.1, 0.1, 0.2)
 
   WalkerAliasMethod.setUp(N, pp)
-//  val results = (0 until 1000000).map(_ => WalkerAliasMethod.sample())
+  //  val results = (0 until 1000000).map(_ => WalkerAliasMethod.sample())
   val results = (0 until 1000000).map(_ => sampling(pp))
   val counts = results.distinct.map(i => (i, results.count(_ == i))).sortWith(_._2 < _._2)
   println(counts)
@@ -16,26 +16,28 @@ object WalkerAliasMethodApp extends App {
     val zipped = pp.map(_ / sum).zipWithIndex
     val mapped = acc(zipped).sortWith(_._2 < _._2)
     val p = new Random().nextDouble()
-    val idx = mapped find { case (_, score) =>
-      p <= score
+    val idx = mapped find {
+      case (_, score) =>
+        p <= score
     } getOrElse mapped.last
     idx._1
   }
 
   def acc(zipped: Seq[(Double, Int)]) = {
-    zipped map { case (v, k) =>
+    zipped map {
+      case (v, k) =>
         if (k > 0) (k, v + zipped(k - 1)._1)
         else (k, v)
     }
   }
 
-  object WalkerAliasMethod {  // N=number of sample values, ff=bar fractions, aa=aliases
+  object WalkerAliasMethod { // N=number of sample values, ff=bar fractions, aa=aliases
     val random = new Random
     var N: Int = _
     var ff: Array[Double] = _
     var aa: Array[Int] = _
 
-    def setUp(N:Int, pp: Seq[Double]) { //pp=probability vector
+    def setUp(N: Int, pp: Seq[Double]) { //pp=probability vector
       this.N = N
       var jmin: Int = 0
       var jmax: Int = 0
@@ -71,7 +73,7 @@ object WalkerAliasMethodApp extends App {
             jmax = j
           }
         }
-        if (bmax-bmin >= tol) {
+        if (bmax - bmin >= tol) {
           aa(jmin) = jmax
           ff(jmin) = 1 + bmin * N
           bb(jmin) = 0

@@ -26,9 +26,9 @@ class DuckTyping {
 
   def callSizePattern[A](a: A) = {
     val size = a match {
-      case nice@Nice(_) => nice.size
-      case great@Great(_) => great.size
-      case list@(_ : Traversable[_]) => list.size
+      case nice @ Nice(_) => nice.size
+      case great @ Great(_) => great.size
+      case list @ (_: Traversable[_]) => list.size
     }
     size
   }
@@ -38,51 +38,49 @@ class DuckTyping {
     hasSize.size
   }
 
-
-
   val nice = Nice(1)
   val great = Great(2)
   val seq = Seq(1, 2, 3)
 
-//  @Benchmark
+  //  @Benchmark
   def benchReflection(): Unit = {
     (0 to NUM) foreach (_ => callSizeReflection(nice))
   }
 
-//  @Benchmark
+  //  @Benchmark
   def benchPattern(): Unit = {
     (0 to NUM) foreach (_ => callSizePattern(nice))
-}
+  }
 
-//  @Benchmark
+  //  @Benchmark
   def benchDuck(): Unit = {
     (0 to NUM) foreach (_ => callSizeDuck(nice))
-}
+  }
 
-//
-//  println(callSizeReflection(nice))
-//  println(callSizePattern(nice))
-//  println(callSizeDuck(nice))
-//
-//  println(callSizeReflection(great))
-//  println(callSizePattern(great))
-//  println(callSizeDuck(great))
-//
-//  println(callSizeReflection(seq))
-//  println(callSizePattern(seq))
-//  println(callSizeDuck(seq))
-//
-//
-//    val nice = Nice(1)
-//  def now = System.currentTimeMillis
-//  def performance(num: Int, func: => Unit) = {
-//    val start = now
-//    (0 until num) foreach { _ => func }
-//    val end = now
-//    println(s"Time ${end - start}")
-//  }
-//
-//  val count = 1000000
-//  performance(count, callSizeReflection(nice))
-//  performance(count, callSizeDuck(nice))
+  //
+  //  println(callSizeReflection(nice))
+  //  println(callSizePattern(nice))
+  //  println(callSizeDuck(nice))
+  //
+  //  println(callSizeReflection(great))
+  //  println(callSizePattern(great))
+  //  println(callSizeDuck(great))
+  //
+  //  println(callSizeReflection(seq))
+  //  println(callSizePattern(seq))
+  //  println(callSizeDuck(seq))
+  //
+  //
+  //    val nice = Nice(1)
+  //  def now = System.currentTimeMillis
+  //  def performance(num: Int, func: => Unit) = {
+  //    val start = now
+  //    (0 until num) foreach { _ => func }
+  //    val end = now
+  //    println(s"Time ${end - start}")
+  //  }
+  //
+  //  val count = 1000000
+  //  performance(count, callSizeReflection(nice))
+  //  performance(count, callSizeDuck(nice))
 }

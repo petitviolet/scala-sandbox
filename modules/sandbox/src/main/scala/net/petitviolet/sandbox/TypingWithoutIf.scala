@@ -55,6 +55,6 @@ object TypingWithoutIf extends App {
     case _: PerformanceData => new PerformanceService[PerformanceData]
     case _ => throw new RuntimeException()
   }
-//  service.run(creative.adData)
+  //  service.run(creative.adData)
 
 }
