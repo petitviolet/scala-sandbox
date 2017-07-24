@@ -3,8 +3,11 @@ import sbt.Keys._
 
 val libVersion = "1.0"
 
+val scalaz = "7.2.14"
 val commonDependencies = Seq(
-  "org.scalaz" %% "scalaz-core" % "7.2.14",
+  "org.scalaz" %% "scalaz-core" % scalaz,
+  "org.scalaz" %% "scalaz-concurrent" % scalaz,
+  "com.lihaoyi" %% "sourcecode" % "0.1.3",
   "com.chuusai" %% "shapeless" % "2.3.2"
 )
 
