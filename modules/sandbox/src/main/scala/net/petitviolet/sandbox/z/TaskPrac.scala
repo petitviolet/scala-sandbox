@@ -44,7 +44,5 @@ object TaskPrac extends App with Logging {
 
   logging(successTask.timed(10.millis).attempt.unsafePerformSync)
   logging(willFail.timed(10.millis).attempt.unsafePerformSync)
-
-  logging(willFail.timed(10.millis).attempt.unsafePerformSync)
 }
 
