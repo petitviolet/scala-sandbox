@@ -11,7 +11,7 @@ val commonDependencies = Seq(
   "com.chuusai" %% "shapeless" % "2.3.2"
 )
 
-val scala = "2.12.2"
+val scala = "2.12.3"
 
 def commonSettings(name: String) = Seq(
   scalaVersion := scala,
