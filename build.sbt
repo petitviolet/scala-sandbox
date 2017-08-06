@@ -20,9 +20,8 @@ def commonSettings(name: String) = Seq(
   libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 )
 
-lazy val root = (project in file("."))
+lazy val sandboxRoot = (project in file("."))
   .settings(commonSettings("scala-sandbox"))
-
 
 lazy val sandbox = (project in file("modules/sandbox"))
   .settings(commonSettings("sandbox"))
