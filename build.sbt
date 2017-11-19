@@ -8,7 +8,9 @@ val commonDependencies = Seq(
   "org.scalaz" %% "scalaz-core" % scalaz,
   "org.scalaz" %% "scalaz-concurrent" % scalaz,
   "com.lihaoyi" %% "sourcecode" % "0.1.3",
-  "com.chuusai" %% "shapeless" % "2.3.2"
+  "com.chuusai" %% "shapeless" % "2.3.2",
+  "org.scalatest" %% "scalatest" % "3.0.4" % Test,
+  "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
 )
 
 val scala = "2.12.3"
