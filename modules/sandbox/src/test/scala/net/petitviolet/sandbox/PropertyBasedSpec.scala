@@ -1,5 +1,7 @@
 package net.petitviolet.sandbox
 
+import java.util.{ Calendar, GregorianCalendar }
+
 import org.scalacheck.{ Arbitrary, Gen }
 import org.scalatest._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
@@ -12,6 +14,79 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
     scenario("scenario") {
       forAll(Gen.alphaStr) { alphaStr: String =>
         alphaStr shouldBe alphaStr.reverse.reverse
+      }
+    }
+    scenario("Gen.calendar") {
+      forAll(Gen.calendar) { calendar: Calendar =>
+        whenever(calendar.get(Calendar.ERA) == GregorianCalendar.AD) {
+          val before = calendar.get(Calendar.YEAR)
+          calendar.add(Calendar.YEAR, 100)
+          val after = calendar.get(Calendar.YEAR)
+          (before + 100) shouldBe after
+        }
+      }
+    }
+    scenario("Gen.alphaStr") {
+      forAll(Gen.alphaLowerStr, Gen.numStr) { (alpha, num) =>
+        whenever(alpha.nonEmpty && num.nonEmpty) {
+          (alpha + num).matches("^[a-z]+[0-9]+$") shouldBe true
+        }
+      }
+    }
+  }
+  class Age(value: Int)
+  object Age {
+    private val (min, max) = (0, 120)
+
+    def create(value: Int): Option[Age] =
+      if (value >= min && value <= max) {
+        Some(new Age(value))
+      } else None
+  }
+  feature("Age with Example") {
+    scenario("create valid age 1") {
+      Age.create(0).isDefined shouldBe true
+    }
+    scenario("create valid age 2") {
+      Age.create(50).isDefined shouldBe true
+    }
+    scenario("create valid age 3") {
+      Age.create(120).isDefined shouldBe true
+    }
+
+    scenario("create invalid age 1") {
+      Age.create(-1).isDefined shouldBe false
+    }
+    scenario("create invalid age 2") {
+      Age.create(121).isDefined shouldBe false
+    }
+  }
+  feature("Age with Example loop") {
+    scenario("create valid age") {
+      val values = Seq(0, 50, 120)
+      values.foreach { value =>
+        Age.create(value).isDefined shouldBe true
+      }
+    }
+
+    scenario("create invalid age") {
+      val values = Seq(-1, 121)
+      values.foreach { value =>
+        Age.create(value).isDefined shouldBe false
+      }
+    }
+  }
+
+  feature("Age with Property") {
+    scenario("create valid age") {
+      forAll(Gen.chooseNum(0, 120)) { value: Int =>
+        Age.create(value).isDefined shouldBe true
+      }
+    }
+    scenario("create invalid age") {
+      val gen = Gen.oneOf(Gen.negNum[Int], Gen.posNum[Int].suchThat { _ > 120 })
+      forAll(gen) { value: Int =>
+        Age.create(value).isDefined shouldBe false
       }
     }
   }
@@ -29,9 +104,10 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
       )
 
       Seq(
-        { s: String => if (s.nonEmpty) ().success else "password must not be empty".failureNel }, { s: String =>
-          if (s.length >= 8 && s.length <= 16) ().success
-          else "password length must be between 8 and 16".failureNel
+        { s: String => if (s.nonEmpty) ().success else "password must not be empty".failureNel },
+        { s: String =>
+          if (s.length >= 8 && s.length <= 30) ().success
+          else "password length must be between 8 and 30".failureNel
         }, { s: String =>
           if (patterns.forall { _.matcher(s).matches() }) ().success
           else s"password must contains alpha and num".failureNel
@@ -51,23 +127,23 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
   }
 
   feature("string generator") {
-    scenario("between 8 and 16") {
+    scenario("between 8 and 30") {
       val strGen = for {
-        n <- Gen.chooseNum(8, 16)
+        n <- Gen.chooseNum(8, 30)
         cs <- Gen.listOfN(n, Gen.alphaNumChar)
       } yield {
         cs.mkString
       }
       // below Gen discards too many test case
-      // val strGen = Gen.alphaNumStr.suchThat { s => 8 <= s.length && s.length <= 16 }
+      // val strGen = Gen.alphaNumStr.suchThat { s => 8 <= s.length && s.length <= 30 }
       forAll(strGen) { (s: String) =>
         s.length >= 8 shouldBe true
-        s.length <= 16 shouldBe true
+        s.length <= 30 shouldBe true
       }
     }
 
-    scenario("between 8 and 16 with arbitrary") {
-      val strGen = Gen.chooseNum(8, 16).flatMap { n =>
+    scenario("between 8 and 30 with arbitrary") {
+      val strGen = Gen.chooseNum(8, 30).flatMap { n =>
         Gen.listOfN(n, Gen.alphaNumChar).map { cs =>
           cs.mkString
         }
@@ -75,7 +151,7 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
       implicit val arb = Arbitrary(strGen)
       forAll { (s: String) =>
         s.length >= 8 shouldBe true
-        s.length <= 16 shouldBe true
+        s.length <= 30 shouldBe true
       }
     }
   }
@@ -120,7 +196,7 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
       }
     }
     scenario("success with proper string") {
-      val shortStrGen = alphaNumStrGenWithMinMax(8, 16)
+      val shortStrGen = alphaNumStrGenWithMinMax(8, 30)
       forAll(shortStrGen) { (s: String) =>
         Password.create(s).fold(
           { msgs => fail(s"raw: $s, ${msgs.stream.mkString(", ")}") },
@@ -147,7 +223,7 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
       }
     }
     scenario("fail with long string") {
-      val longStrGen = alphaNumStrGenWithMinMax(17, 100)
+      val longStrGen = alphaNumStrGenWithMinMax(31, 100)
       forAll(longStrGen) { (s: String) =>
         Password.create(s).fold(
           { msgs => succeed },
@@ -156,7 +232,7 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
       }
     }
     scenario("fail with only alpha string") {
-      val alphaStrGen = strGenWithMinMax(8, 16, Gen.alphaChar)
+      val alphaStrGen = strGenWithMinMax(8, 30, Gen.alphaChar)
       forAll(alphaStrGen) { (s: String) =>
         Password.create(s).fold(
           { msgs => succeed },
@@ -165,7 +241,7 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
       }
     }
     scenario("fail with only num string") {
-      val numStrGen = strGenWithMinMax(8, 16, Gen.numChar)
+      val numStrGen = strGenWithMinMax(8, 30, Gen.numChar)
       forAll(numStrGen) { (s: String) =>
         Password.create(s).fold(
           { msgs => succeed },
