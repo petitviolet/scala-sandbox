@@ -33,6 +33,19 @@ class PropertyBasedSpec extends FeatureSpec with GeneratorDrivenPropertyChecks w
         }
       }
     }
+    scenario("Telephone") {
+      val telGen = for {
+        z <- Gen.const(0)
+        n1 <- Gen.listOfN(2, Gen.numChar)
+        n2 <- Gen.listOfN(4, Gen.numChar)
+        n3 <- Gen.listOfN(4, Gen.numChar)
+      } yield { s"$z${n1.mkString}-${n2.mkString}-${n3.mkString}" }
+
+      forAll(telGen) { tel =>
+        println(s"tel: $tel")
+        tel.matches("\\d+{3}-\\d+{4}-\\d+{4}") shouldBe true
+      }
+    }
   }
   class Age(value: Int)
   object Age {
